@@ -1,19 +1,15 @@
-# CAN-Examples
-Example C code for SocketCAN on Linux
+# CAN-Exemples
+Exemple de code en C pour utiliser SocketCAN sur Linux Linux
+(forked from craigpeacock/CAN-Examples)
 
-* Based on documentation at: https://www.kernel.org/doc/Documentation/networking/can.txt
-* A simplified tutorial can be found at: https://www.beyondlogic.org/example-c-socketcan-code/
-* Hardcoded to use the vcan0 virtual CAN device.
+* Basé sur la documentation : https://www.kernel.org/doc/Documentation/networking/can.txt
+* Tutoriel simplifié: https://www.beyondlogic.org/example-c-socketcan-code/
+* Par défaut le port can0 est utilisé en tant que périphérique CAN.
 
-To install VCAN0:
+Pour installer CAN0:
+$ ip link set can0 up type can bitrate 125000
 ```
-$ ip link add dev vcan0 type vcan
-```
-Use gcc to build examples:
-```
+Pour 'Compile et Build', utiliser gcc:
 $ gcc cantransmit.c -o cantransmit
-
 $ gcc canreceive.c -o canreceive
-
 $ gcc canfilter.c -o canfilter
-```
