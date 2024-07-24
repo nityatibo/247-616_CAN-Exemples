@@ -11,7 +11,7 @@
 #include <linux/can.h>
 #include <linux/can/raw.h>
 
-int main(int argc, char **argv)
+int main(int argc, char *argv[]) //char **argv)
 {
 	int s, i; 
 	int nbytes;
@@ -25,8 +25,11 @@ int main(int argc, char **argv)
 		perror("Socket");
 		return 1;
 	}
+	
+	if(argc == 2)
+		strcpy(ifr.ifr_name, argv[1]);
+	else strcpy(ifr.ifr_name, "can0" );
 
-	strcpy(ifr.ifr_name, "can0" );
 	ioctl(s, SIOCGIFINDEX, &ifr);
 
 	memset(&addr, 0, sizeof(addr));
