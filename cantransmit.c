@@ -21,17 +21,34 @@ int main(int argc, char **argv)
 
 	printf("CAN Sockets Demo\r\n");
 
-	if ((s = socket(PF_CAN, SOCK_RAW, CAN_RAW)) < 0) {
+	/*
+	La première étape est de créer un socket. 
+	Cette fonction accepte trois paramètres : 
+		domaine/famille de protocoles (PF_CAN), 
+		type de socket (raw ou datagram) et 
+		protocole de socket. 
+	la fonction retourne un descripteur de fichier.
+	*/
+	if ((s = socket(PF_CAN, SOCK_RAW, CAN_RAW)) < 0) { // Création du socket CAN, de type RAW
 		perror("Socket");
 		return 1;
 	}
 
-	if(argc == 2)
+	/*
+	Ensuite, récupérer l'index de l'interface pour le nom de l'interface (can0, can1, vcan0, etc.) 
+	que nous souhaitons utiliser. Envoyer un appel de contrôle d'entrée/sortie et 
+	passer une structure ifreq contenant le nom de l'interface 
+	*/
+	if(argc == 2) // si un argument est passé au programme, on l'assigne au nom da l'interface CAN à utiliser
 		strcpy(ifr.ifr_name, argv[1]);
-	else strcpy(ifr.ifr_name, "can0" );
+	else strcpy(ifr.ifr_name, "can0" ); // par défaut l'interface can0
 
 	ioctl(s, SIOCGIFINDEX, &ifr);
 
+	/*
+	Alternativement, zéro comme index d'interface, permet de récupérer les paquets de toutes les interfaces CAN.
+	Avec l'index de l'interface, maintenant lier le socket à l'interface CAN
+	*/
 	memset(&addr, 0, sizeof(addr));
 	addr.can_family = AF_CAN;
 	addr.can_ifindex = ifr.ifr_ifindex;
@@ -41,9 +58,13 @@ int main(int argc, char **argv)
 		return 1;
 	}
 
-	frame.can_id = 0x555;
-	frame.can_dlc = 5;
-	sprintf(frame.data, "Hello");
+	/*
+	Envoyer une trame CAN, initialiser une structure can_frame et la remplir avec des données. 
+	La structure can_frame de base est définie dans include/linux/can.h  
+	*/
+	frame.can_id = 0x0F7;  	// identifiant CAN, exemple: 247 = 0x0F7
+	frame.can_dlc = 7;		// nombre d'octets de données
+	sprintf(frame.data, "616-TGE");  // données 
 
 	if (write(s, &frame, sizeof(struct can_frame)) != sizeof(struct can_frame)) {
 		perror("Write");

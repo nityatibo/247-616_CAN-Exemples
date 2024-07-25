@@ -33,7 +33,7 @@ int main(int argc, char **argv)
 	else strcpy(ifr.ifr_name, "can0" );
 
 	ioctl(s, SIOCGIFINDEX, &ifr);
-
+	
 	memset(&addr, 0, sizeof(addr));
 	addr.can_family = AF_CAN;
 	addr.can_ifindex = ifr.ifr_ifindex;
