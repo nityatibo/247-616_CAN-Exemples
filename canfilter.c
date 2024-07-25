@@ -1,5 +1,5 @@
 
-#define _BSD_SOURCE
+#define _DEFAULT_SOURCE
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -27,7 +27,6 @@ int main(int argc, char **argv)
 		perror("Socket");
 		return 1;
 	}
-
 
 	if(argc == 2)
 		strcpy(ifr.ifr_name, argv[1]);
