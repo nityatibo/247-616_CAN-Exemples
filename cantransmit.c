@@ -1,3 +1,4 @@
+#define _BSD_SOURCE
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -25,7 +26,10 @@ int main(int argc, char **argv)
 		return 1;
 	}
 
-	strcpy(ifr.ifr_name, "can0" );
+	if(argc == 2)
+		strcpy(ifr.ifr_name, argv[1]);
+	else strcpy(ifr.ifr_name, "can0" );
+
 	ioctl(s, SIOCGIFINDEX, &ifr);
 
 	memset(&addr, 0, sizeof(addr));
