@@ -1,4 +1,4 @@
-# CAN-Exemples
+# Communication CAN
 Exemple de code en C pour utiliser SocketCAN sur Linux Linux
 (forked from craigpeacock/CAN-Examples)
 
