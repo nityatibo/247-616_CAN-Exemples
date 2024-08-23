@@ -7,7 +7,7 @@ Exemple de code en C pour utiliser SocketCAN sur Linux
 
 Par défaut le port can0 est utilisé en tant que périphérique CAN.
 Pour installer le bus reel CAN:
-* $ ip link set can0 up type can bitrate 125000
+* $ sudo ip link set can0 up type can bitrate 125000
 
 Pour installer le bus virtuel VCAN:
 * $ sudo ip link add dev vcan0 type vcan 
