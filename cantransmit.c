@@ -41,7 +41,7 @@ int main(int argc, char **argv)
 	*/
 	if(argc == 2) // si un argument est passé au programme, on l'assigne au nom da l'interface CAN à utiliser
 		strcpy(ifr.ifr_name, argv[1]);
-	else strcpy(ifr.ifr_name, "can0" ); // par défaut l'interface can0
+	else strcpy(ifr.ifr_name, "vcan0" ); // par défaut l'interface can0
 
 	ioctl(s, SIOCGIFINDEX, &ifr);
 
