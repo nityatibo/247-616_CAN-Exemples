@@ -42,7 +42,7 @@ int main(int argc, char *argv[]) //char **argv)
 	*/
 	if(argc == 2)
 		strcpy(ifr.ifr_name, argv[1]);
-	else strcpy(ifr.ifr_name, "can0" );
+	else strcpy(ifr.ifr_name, "vcan0" );
 
 	ioctl(s, SIOCGIFINDEX, &ifr);
 
