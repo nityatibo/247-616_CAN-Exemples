@@ -14,7 +14,7 @@
 
 int main(int argc, char **argv)
 {
-	int s; 
+	int fdSocketCAN; 
 	struct sockaddr_can addr;
 	struct ifreq ifr;
 	struct can_frame frame;
@@ -29,9 +29,9 @@ int main(int argc, char **argv)
 		protocole de socket. 
 	la fonction retourne un descripteur de fichier.
 	*/
-	if ((s = socket(PF_CAN, SOCK_RAW, CAN_RAW)) < 0) { // Création du socket CAN, de type RAW
+	if ((fdSocketCAN = socket(PF_CAN, SOCK_RAW, CAN_RAW)) < 0) { // Création du socket CAN, de type RAW
 		perror("Socket");
-		return 1;
+		return -1;
 	}
 
 	/*
@@ -43,19 +43,21 @@ int main(int argc, char **argv)
 		strcpy(ifr.ifr_name, argv[1]);
 	else strcpy(ifr.ifr_name, "vcan0" ); // par défaut l'interface can0
 
-	ioctl(s, SIOCGIFINDEX, &ifr);
+	ioctl(fdSocketCAN, SIOCGIFINDEX, &ifr);
+	/*	Alternativement, zéro comme index d'interface, permet de récupérer les paquets de toutes les interfaces CAN.
+	Avec l'index de l'interface, maintenant lier le socket à l'interface CAN
+	*/
 
 	/*
-	Alternativement, zéro comme index d'interface, permet de récupérer les paquets de toutes les interfaces CAN.
-	Avec l'index de l'interface, maintenant lier le socket à l'interface CAN
+	
 	*/
 	memset(&addr, 0, sizeof(addr));
 	addr.can_family = AF_CAN;
 	addr.can_ifindex = ifr.ifr_ifindex;
 
-	if (bind(s, (struct sockaddr *)&addr, sizeof(addr)) < 0) {
+	if (bind(fdSocketCAN, (struct sockaddr *)&addr, sizeof(addr)) < 0) {
 		perror("Bind");
-		return 1;
+		return -1;
 	}
 
 	/*
@@ -66,14 +68,14 @@ int main(int argc, char **argv)
 	frame.can_dlc = 7;		// nombre d'octets de données
 	sprintf(frame.data, "616-TGE");  // données 
 
-	if (write(s, &frame, sizeof(struct can_frame)) != sizeof(struct can_frame)) {
+	if (write(fdSocketCAN, &frame, sizeof(struct can_frame)) != sizeof(struct can_frame)) {
 		perror("Write");
-		return 1;
+		return -1;
 	}
 
-	if (close(s) < 0) {
+	if (close(fdSocketCAN) < 0) {
 		perror("Close");
-		return 1;
+		return -1;
 	}
 
 	return 0;

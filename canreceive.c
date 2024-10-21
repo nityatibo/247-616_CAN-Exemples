@@ -14,7 +14,7 @@
 
 int main(int argc, char *argv[]) //char **argv)
 {
-	int s, i; 
+	int fdSocketCAN, i; 
 	int nbytes;
 	struct sockaddr_can addr;
 	struct ifreq ifr;
@@ -30,9 +30,9 @@ int main(int argc, char *argv[]) //char **argv)
 		protocole de socket. 
 	la fonction retourne un descripteur de fichier.
 	*/
-	if ((s = socket(PF_CAN, SOCK_RAW, CAN_RAW)) < 0) {
+	if ((fdSocketCAN = socket(PF_CAN, SOCK_RAW, CAN_RAW)) < 0) {
 		perror("Socket");
-		return 1;
+		return -1;
 	}
 	
 	/*
@@ -44,27 +44,29 @@ int main(int argc, char *argv[]) //char **argv)
 		strcpy(ifr.ifr_name, argv[1]);
 	else strcpy(ifr.ifr_name, "vcan0" );
 
-	ioctl(s, SIOCGIFINDEX, &ifr);
+	ioctl(fdSocketCAN, SIOCGIFINDEX, &ifr);
+	/* 	Alternativement, zéro comme index d'interface, permet de récupérer les paquets de toutes les interfaces CAN.
+	Avec l'index de l'interface, maintenant lier le socket à l'interface CAN
+	*/
 
 	/*
-	Alternativement, zéro comme index d'interface, permet de récupérer les paquets de toutes les interfaces CAN.
-	Avec l'index de l'interface, maintenant lier le socket à l'interface CAN
+	
 	*/
 	memset(&addr, 0, sizeof(addr));
 	addr.can_family = AF_CAN;
 	addr.can_ifindex = ifr.ifr_ifindex;
 
-	if (bind(s, (struct sockaddr *)&addr, sizeof(addr)) < 0) {
+	if (bind(fdSocketCAN, (struct sockaddr *)&addr, sizeof(addr)) < 0) {
 		perror("Bind");
-		return 1;
+		return -1;
 	}
 
 	// appel système read(). Cela bloquera jusqu'à ce qu'une trame soit disponible
-	nbytes = read(s, &frame, sizeof(struct can_frame));
+	nbytes = read(fdSocketCAN, &frame, sizeof(struct can_frame));
 
  	if (nbytes < 0) {
 		perror("Read");
-		return 1;
+		return -1;
 	}
 
 	printf("0x%03X [%d] ",frame.can_id, frame.can_dlc);
@@ -72,9 +74,9 @@ int main(int argc, char *argv[]) //char **argv)
 		printf("%02X ",frame.data[i]);
 	printf("\r\n");
 
-	if (close(s) < 0) {
+	if (close(fdSocketCAN) < 0) {
 		perror("Close");
-		return 1;
+		return -1;
 	}
 
 	return 0;
